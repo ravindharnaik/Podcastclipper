@@ -763,7 +763,7 @@ export default function Home() {
       ]
     }
 
-    const titles = viralTitles[pattern.type] || [`🔥 ${baseFileName} - Must-Watch Highlight #${index}`]
+    const titles = viralTitles[pattern.type as keyof typeof viralTitles] || [`🔥 ${baseFileName} - Must-Watch Highlight #${index}`]
     // Use randomIndex for consistent but different selection each time
     const selectedIndex = randomIndex % titles.length
     console.log(`🎲 Selected title ${selectedIndex + 1}/${titles.length} for ${pattern.type}`)
@@ -859,7 +859,7 @@ export default function Home() {
       })
     
     // Generate YouTube clips from segments marked as 'youtube' type
-    const youtubeClips = []
+    const youtubeClips: any[] = []
     
     // Select segments that were randomly assigned as YouTube clips
     const youtubeSegments = contentSegments.filter(seg => seg.clipType === 'youtube')
@@ -1152,7 +1152,7 @@ export default function Home() {
       
     } catch (error) {
       console.error(`❌ CLIP GENERATION FAILED:`, error)
-      showToast(`Clip generation failed: ${error.message}`, 'error')
+      showToast(`Clip generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
       return []
     }
   }
@@ -1646,7 +1646,7 @@ export default function Home() {
         await ffmpeg.writeFile(inputFileName, new Uint8Array(videoArrayBuffer))
         console.log('✅ Video loaded into FFmpeg virtual file system')
       } catch (writeError) {
-        throw new Error(`Failed to write video to FFmpeg: ${writeError.message}`)
+        throw new Error(`Failed to write video to FFmpeg: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`)
       }
       
       // Step 5: Calculate timing parameters with precision
@@ -1743,7 +1743,7 @@ export default function Home() {
       } catch (ffmpegError) {
         console.error('❌ FFmpeg execution failed:', ffmpegError)
         console.error('❌ Failed command:', ffmpegArgs.join(' '))
-        throw new Error(`FFmpeg processing failed: ${ffmpegError.message}`)
+        throw new Error(`FFmpeg processing failed: ${ffmpegError instanceof Error ? ffmpegError.message : 'Unknown error'}`)
       }
       
       // Step 8: Read the generated clip
@@ -1756,10 +1756,10 @@ export default function Home() {
         }
         console.log(`✅ Clip file read: ${outputData.length} bytes`)
       } catch (readError) {
-        throw new Error(`Failed to read generated clip: ${readError.message}`)
+        throw new Error(`Failed to read generated clip: ${readError instanceof Error ? readError.message : 'Unknown error'}`)
       }
       
-      const outputBlob = new Blob([outputData], { type: 'video/mp4' })
+      const outputBlob = new Blob([outputData as any], { type: 'video/mp4' })
       
       // Validate that we actually got a clip, not the full video
       const originalSizeMB = videoArrayBuffer.byteLength / 1024 / 1024
